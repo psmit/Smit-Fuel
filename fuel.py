@@ -20,14 +20,16 @@ class Refueling(db.Model):
 class FormPage(webapp.RequestHandler):
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'form.html')
-		self.response.out.write(template.render(path))
+		self.response.out.write(template.render(path, { }))
 
 class SubmitPage(webapp.RequestHandler):
-	def post(self):
+	def post(self):	
+		path = os.path.join(os.path.dirname(__file__), 'form.html')
 		
 		
 class ConfirmPage(webapp.RequestHandler):
 	def get(self):
+		path = os.path.join(os.path.dirname(__file__), 'form.html')
 		
 	
 application = webapp.WSGIApplication(
