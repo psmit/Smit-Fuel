@@ -1,0 +1,12 @@
+ <table>
+    {% for refueling in refuelings %}
+     <tr>
+        <td>{{ refueling.author.nickname }}</td>
+        <td>{{ refueling.date }}</td>
+        <td>{{ refueling.liters }}</td>
+        <td>{{ refueling.liter_price }}</td>
+        <td>{{ refueling.total_price }}</td>
+        <td>{{ refueling.odo }}</td>
+      </tr>
+    {% endfor %}
+ </table>
