@@ -14,13 +14,12 @@ class Refueling(db.Model):
 	liters = db.FloatProperty()
 	liter_price = db.IntegerProperty()
 	total_price = db.IntegerProperty()
-	odo = db.IntegerProperty
-	full_tank = db.BooleanProperty()
+	odo = db.IntegerProperty()
 
 class FormPage(webapp.RequestHandler):
 	def get(self):
 		if users.get_current_user():
-			path = os.path.join(os.path.dirname(__file__), 'form.html')
+			path = os.path.join(os.path.dirname(__file__), 'template/form.html')
 			self.response.out.write(template.render(path, { }))
 		else:
 			self.redirect(users.create_login_url(self.request.uri))
@@ -34,7 +33,7 @@ class SubmitPage(webapp.RequestHandler):
 			refueling.user = users.get_current_user()
 			refueling.liters = float(self.request.get('liters'))
 			refueling.liter_price = int(round(float(self.request.get('literprice')), 3)* 1000)
-			refueling.total_price = int(round((refueling.liter_price * refueling.liters) / 10, 0))
+			refueling.total_price = int(round((refueling.liter_price * refueling.liters), 0))
 			refueling.odo = int(self.request.get('odo'))
 			
 			refueling.put()
@@ -51,7 +50,7 @@ class ListPage(webapp.RequestHandler):
 			'refuelings': refuelings,
 		}
 		
-		path = os.path.join(os.path.dirname(__file__), 'list.html')
+		path = os.path.join(os.path.dirname(__file__), 'template/list.html')
 		self.response.out.write(template.render(path, template_values))
 	
 application = webapp.WSGIApplication(

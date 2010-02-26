@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>Post fueling up</title>
+		<link href="/stylesheets/main.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<form action="/create" method="post">
+			<fieldset>
+				<legend>Refueling:</legend>
+				<ol>
+					<li><label for="odo">ODO (km.):</label><input type="text" id="odo" name="odo"></li>
+					<li><label for="liters">Liters:</label><input type="text" id="liters" name="liters"></li>
+					<li><label for="literprice">Liter Price:</label><input type="text" id="literprice" name="literprice"></li>
+				</ol>
+			</fieldset>
+			<fieldset class="submit">
+				<input type="submit" id="submit" name="submit" value="submit">
+			</fieldset>
+		</form>
+
+		<a href="/list">List all entries</a>
+	</body>
+</html>
