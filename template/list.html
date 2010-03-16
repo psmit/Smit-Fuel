@@ -1,3 +1,4 @@
+ <a href='/'>Go back to form</a>
  <table>
 	<thead>
 	  <tr>
@@ -14,11 +15,12 @@
 		 <tr>
 			<td>{{ refueling.author.nickname }}</td>
 			<td>{{ refueling.date }}</td>
-			<td>{{ refueling.liters }}</td>
-			<td>{{ refueling.liter_price }}</td>
-			<td>{{ refueling.total_price }}</td>
+			<td>{{ refueling.liters|floatformat:2 }}</td>
+			<td>{{ refueling.real_liter_price|floatformat:3 }}</td>
+			<td>{{ refueling.real_total_price|floatformat:2 }}</td>
 			<td>{{ refueling.odo }}</td>
 		  </tr>
 		{% endfor %}
     </tbody>
  </table>
+

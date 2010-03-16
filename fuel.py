@@ -15,6 +15,12 @@ class Refueling(db.Model):
 	liter_price = db.IntegerProperty()
 	total_price = db.IntegerProperty()
 	odo = db.IntegerProperty()
+	
+	def real_liter_price(self):
+		return float(self.liter_price) / 1000.0
+		
+	def real_total_price(self):
+		return float(self.total_price) / 1000.0
 
 class FormPage(webapp.RequestHandler):
 	def get(self):
