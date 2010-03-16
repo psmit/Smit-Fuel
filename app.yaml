@@ -12,3 +12,7 @@ handlers:
 
 - url: /.*
   script: fuel.py
+
+- url: /favicon.ico
+  static_files: images/favicon.ico
+  upload: images/favicon.ico
