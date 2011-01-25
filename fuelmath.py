@@ -1,3 +1,17 @@
+import datetime
+import fuel
+
+def update_refueling_list():
+    r0 = fuel.Refueling.all().order('odo').get()
+
+    if r0.odo > 0:
+        new_r0 = fuel.Refueling(date=datetime.datetime.combine(r0.date.date(),datetime.time(0,0,0)), odo=0, liters=0.0)
+        new_r0.save()
+
+    rest_liters = list(fuel.Refueling.all().order('odo'))
+    run_restliter_algo(rest_liters)
+
+    for rl in rest_liters: rl.save()
 
 
 def run_restliter_algo(refuelings):
@@ -46,7 +60,7 @@ def run_restliter_algo(refuelings):
 
 
     def _get_within_bounds(min_val, max_val, val):
-        return min(max_val,max(min_val,val))
+        return float(min(max_val,max(min_val,val)))
 
     for i in xrange(4):
         smooth_forward(refuelings,1.0/(i+1.0))

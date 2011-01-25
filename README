@@ -1,3 +1,3 @@
 This is an application for tracking fuel price and usage developed in python for the Google App platform
 
-All code in this repository / directory is licensed under the Simple BSD license (see LICENSE)
+All code in this repository / directory is licensed under the Simple BSD license (see LICENSE), except for the files under gviz, which are licensed by Google under the Apache licence (see the files COPYRIGHT and README in the gviz directory)
