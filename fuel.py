@@ -16,7 +16,7 @@ class Refueling(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
     liters = db.FloatProperty()
     rest_liters = db.FloatProperty(default=0.0)
-    liter_price = db.IntegerProperty(0)
+    liter_price = db.IntegerProperty(default=0)
     total_price = db.IntegerProperty()
     odo = db.IntegerProperty()
 

@@ -9,8 +9,8 @@ class FuelCacheMonth(db.Model):
     year = db.IntegerProperty()
     month = db.IntegerProperty()
 
-    liters = db.FloatProperty()
-    km = db.FloatProperty()
+    liters = db.FloatProperty(default=0.0)
+    km = db.FloatProperty(default=0.0)
 
     def liters_per_km(self):
         return self.liters/self.km
@@ -81,6 +81,20 @@ def updateWeekCache(out):
     print  >> out, "total km = %.2f" % sum(w.km for w in weeks.itervalues())
     print  >> out,"total l = %.2f" % sum(w.liters for w in weeks.itervalues())
 
+
+def updateMonthCache(out):
+    for m in FuelCacheMonth.all(): m.delete()
+
+    start_date =  fuel.Refueling.all().order('date').get().date.date()
+    year,month = start_date.year,start_date.month
+
+    end_year,end_month = date.today().year,date.today().month
+
+    months = {}
+
+    while (year,month) <= (end_year,end_month):
+        months[(year,month)] = FuelCacheMonth(year=year,month=month)
+        
 
 
 
