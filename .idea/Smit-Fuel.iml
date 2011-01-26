@@ -4,9 +4,10 @@
     <facet type="google-appengine-python" name="Google App Engine">
       <configuration>
         <option name="rootFolder" value="$MODULE_DIR$" />
-        <option name="sdkFolder" value="" />
-        <option name="templatesFolder" value="" />
-        <option name="gp" value="" />
+        <option name="sdkFolder" value="$USER_HOME$/software/google_appengine" />
+        <option name="templatesFolder" value="$USER_HOME$/software/google_appengine/templates" />
+        <option name="email" value="peter@smitmail.eu" />
+        <option name="gp" value="dfdbdf92dfdedfcbdfc4dfcddfc5dfc8dfda" />
       </configuration>
     </facet>
   </component>
@@ -14,6 +15,7 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Google App Engine SDK" level="project" />
   </component>
 </module>
 

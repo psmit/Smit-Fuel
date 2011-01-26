@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Statistics</title>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['annotatedtimeline']});
+
+    function drawVisualization() {
+      var queryFuel = new google.visualization.Query("http://{{ url }}/json/fuel");
+      queryFuel.send(handleQueryResponseFuel);
+
+      var queryWeek = new google.visualization.Query("http://{{ url }}/json/week");
+      queryWeek.send(handleQueryResponseWeek);
+
+      var queryMonth = new google.visualization.Query("http://{{ url }}/json/month");
+      queryMonth.send(handleQueryResponseMonth);
+
+
+    }
+
+    function handleQueryResponseFuel(response) {
+        if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+        }
+        var data = response.getDataTable();
+        var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('fuel_price'));
+        annotatedtimeline.draw(data, {'displayAnnotations': true, 'scaleType': 'maximized'});
+    }
+
+    function handleQueryResponseWeek(response) {
+        if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+        }
+        var data = response.getDataTable();
+        var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('week_stats'));
+        annotatedtimeline.draw(data, {'displayAnnotations': true, 'scaleType': 'allmaximized','scaleColumns': [0, 1]});
+    }
+
+    function handleQueryResponseMonth(response) {
+        if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+        }
+        var data = response.getDataTable();
+        var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('month_stats'));
+        annotatedtimeline.draw(data, {'displayAnnotations': true,'scaleType': 'allmaximized','scaleColumns': [0, 1]});
+    }
+google.setOnLoadCallback(drawVisualization);
+  </script>
+</head>
+<body style="font-family: Arial,sans-serif;border: 0 none;">
+<h1>Statistics</h1>
+<h2>Fuel prices</h2>
+<div id="fuel_price" style="width: 1000px; height: 400px;"></div>
+
+<h2>Stats per week</h2>
+<div id="week_stats" style="width: 1000px; height: 400px;"></div>
+
+<h2>Stats per month</h2>
+<div id="month_stats" style="width: 1000px; height: 400px;"></div>
+</body>
+</html>
