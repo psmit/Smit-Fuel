@@ -1,5 +1,5 @@
 application: smitfuel
-version: 3
+version: 4
 runtime: python
 api_version: 1
 
@@ -12,6 +12,10 @@ handlers:
 
 - url: /scripts
   static_dir: scripts
+
+- url: /updatestats
+  script: fuel.py
+  login: admin
 
 - url: /.*
   script: fuel.py

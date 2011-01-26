@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import os
 from gviz import gviz_api
 
@@ -62,7 +62,7 @@ class SubmitPage(webapp.RequestHandler):
 class ListPage(webapp.RequestHandler):
     def get(self):
         refueling_query = Refueling.all().order('-date')
-        refuelings = refueling_query.fetch(10)
+        refuelings = refueling_query.fetch(100)
 
         template_values = {
             'refuelings': refuelings,
@@ -72,26 +72,13 @@ class ListPage(webapp.RequestHandler):
         self.response.out.write(template.render(path, template_values))
 
 
-class CacheMaker(webapp.RequestHandler):
-    def get(self):
-        pass
-
-
-class FuelPrice(webapp.RequestHandler):
-    def get(self):
-        template_values = {
-            'refuelings': Refueling.all().order('date')
-        }
-
-        path = os.path.join(os.path.dirname(__file__), 'template/fuelprice.html')
-        self.response.out.write(template.render(path, template_values))
-
 class StatsPage(webapp.RequestHandler):
     def get(self):
         template_values = {
             'refuelings': Refueling.all().order('date'),
             'weekstats' : fuelcache.FuelCacheWeek.all().order('year'),
             'monthstats' : fuelcache.FuelCacheMonth.all().order('year'),
+            'url': self.request.environ['HTTP_HOST']
         }
 
         path = os.path.join(os.path.dirname(__file__), 'template/stats.html')
@@ -101,6 +88,8 @@ class StatsPage(webapp.RequestHandler):
 class UpdateStats(webapp.RequestHandler):
     def get(self):
         fuelcache.updateWeekCache(self.response.out)
+        fuelcache.updateMonthCache(self.response.out)
+        fuelmath.update_refueling_list()
 
 
 class FuelStats(webapp.RequestHandler):
@@ -119,9 +108,10 @@ class FuelStats(webapp.RequestHandler):
         req_id = 0
         a = self.request.get('tqx')
         for b in a.split(';'):
-            c,d = b.split(':',1)
-            if c == 'reqId':
-                req_id = int(d)
+            if len(b)>2:
+                c,d = b.split(':',1)
+                if c == 'reqId':
+                    req_id = int(d)
 
 
         print >> self.response.out, dt.ToJSonResponse(columns_order=("date", "fuel_price", "title1", "text1"),
@@ -137,19 +127,18 @@ class WeekStats(webapp.RequestHandler):
         data_list = []
 
         for fc in  fuelcache.FuelCacheWeek.all().order('year'):
-            data_list.append({'date':datetime.strptime('%d, %d, 0' % (fc.year,fc.week), '%Y, %U, %w').date(), 'usage': fc.liters_per_km()*100,  'title1':'',  'text1':'',
+            if fc.km > 0.0:
+                data_list.append({'date':datetime.strptime('%d, %d, 0' % (fc.year,fc.week), '%Y, %U, %w').date(), 'usage': fc.liters_per_km()*100,  'title1':'',  'text1':'',
                                   'km': fc.km, 'title2':'','text2': ''})
-
 
         dt.LoadData(data_list)
         req_id = 0
         a = self.request.get('tqx')
         for b in a.split(';'):
-            c,d = b.split(':',1)
-            if c == 'reqId':
-                req_id = int(d)
-
-
+            if len(b)>2:
+                c,d = b.split(':',1)
+                if c == 'reqId':
+                    req_id = int(d)
 
         print >> self.response.out, dt.ToJSonResponse(columns_order=("date", "usage", "title1", "text1","km", "title2", "text2"),
                                 order_by="Date",
@@ -160,25 +149,34 @@ class MonthStats(webapp.RequestHandler):
     def get(self):
         self.response.headers["Content-Type"] = "text/plain"
 
-        dt = gviz_api.DataTable({'date': ('date','Date'),'fuel_price': ('number','Fuel Price'), 'title1': ('string'),'text1': ('string')})
+        dt = gviz_api.DataTable({'date': ('date','Date'),'usage': ('number','Fuel Usage'), 'title1': ('string'),'text1': ('string'), 'km': ('number', 'Kilometers'), 'title2': ('string'), 'text2': ('string')})
 
         data_list = []
 
-        for r in  Refueling.all().order('date'):
-            if r.liter_price > 0:
-                data_list.append({'date':r.date.date(), 'fuel_price': r.real_liter_price(),  'title1':'',  'text1':''})
+        for fc in  fuelcache.FuelCacheMonth.all().order('year'):
+            if fc.km > 0.0:
+                data_list.append({'date':date(fc.year,fc.month,1), 'usage': fc.liters_per_km()*100,  'title1':'',  'text1':'',
+                                  'km': fc.km, 'title2':'','text2': ''})
+
 
         dt.LoadData(data_list)
+        req_id = 0
+        a = self.request.get('tqx')
+        for b in a.split(';'):
+            if len(b)>2:
+                c,d = b.split(':',1)
+                if c == 'reqId':
+                    req_id = int(d)
+
+        print >> self.response.out, dt.ToJSonResponse(columns_order=("date", "usage", "title1", "text1","km", "title2", "text2"),
+                                order_by="Date",
+                                req_id = req_id)
 
 
-
-        print >> self.response.out, dt.ToJSonResponse(columns_order=("date", "fuel_price", "title1", "text1"),
-                                order_by="Date")
 application = webapp.WSGIApplication(
                                      [('/', FormPage),
                                       ('/create', SubmitPage),
                                       ('/list', ListPage),
-                                      ('/fuelprice', FuelPrice),
                                       ('/updatestats', UpdateStats),
                                       ('/stats',StatsPage),
                                       ('/json/fuel', FuelStats),

@@ -8,19 +8,17 @@
         google.load('visualization', '1', {packages: ['annotatedtimeline']});
 
     function drawVisualization() {
-  // To see the data that this visualization uses, browse to
-  // http://spreadsheets.google.com/ccc?key=pCQbetd-CptGXxxQIG7VFIQ
-      var queryFuel = new google.visualization.Query("http://localhost:8080/json/fuel");
-
-      // Send the query with a callback function.
+      var queryFuel = new google.visualization.Query("http://{{ url }}/json/fuel");
       queryFuel.send(handleQueryResponseFuel);
 
-      var queryWeek = new google.visualization.Query("http://localhost:8080/json/week");
-
-      // Send the query with a callback function.
+      var queryWeek = new google.visualization.Query("http://{{ url }}/json/week");
       queryWeek.send(handleQueryResponseWeek);
 
-    };
+      var queryMonth = new google.visualization.Query("http://{{ url }}/json/month");
+      queryMonth.send(handleQueryResponseMonth);
+
+
+    }
 
     function handleQueryResponseFuel(response) {
         if (response.isError()) {
@@ -30,9 +28,9 @@
         var data = response.getDataTable();
         var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('fuel_price'));
         annotatedtimeline.draw(data, {'displayAnnotations': true, 'scaleType': 'maximized'});
-    };
+    }
 
-        function handleQueryResponseWeek(response) {
+    function handleQueryResponseWeek(response) {
         if (response.isError()) {
             alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
             return;
@@ -40,7 +38,7 @@
         var data = response.getDataTable();
         var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('week_stats'));
         annotatedtimeline.draw(data, {'displayAnnotations': true, 'scaleType': 'allmaximized','scaleColumns': [0, 1]});
-    };
+    }
 
     function handleQueryResponseMonth(response) {
         if (response.isError()) {
@@ -49,8 +47,8 @@
         }
         var data = response.getDataTable();
         var annotatedtimeline = new google.visualization.AnnotatedTimeLine(document.getElementById('month_stats'));
-        annotatedtimeline.draw(data, {'displayAnnotations': true, 'scaleType': 'maximized'});
-    };
+        annotatedtimeline.draw(data, {'displayAnnotations': true,'scaleType': 'allmaximized','scaleColumns': [0, 1]});
+    }
 google.setOnLoadCallback(drawVisualization);
   </script>
 </head>

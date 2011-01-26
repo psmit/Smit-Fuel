@@ -1,7 +1,8 @@
-from datetime import timedelta, date, datetime, time
-from itertools import islice, islice
-import itertools
 from google.appengine.ext import db
+
+from datetime import timedelta, date, datetime, time
+
+import itertools
 import fuel
 
 
@@ -94,7 +95,49 @@ def updateMonthCache(out):
 
     while (year,month) <= (end_year,end_month):
         months[(year,month)] = FuelCacheMonth(year=year,month=month)
-        
+        month += 1
+        if month == 13:
+            year += 1
+            month = 1
+
+    q = fuel.Refueling.all().order('date')
+    cur_refuel = q.get()
+    for r in itertools.islice(q,1,None):
+        prev_refuel = cur_refuel
+        cur_refuel = r
+
+        total_time = cur_refuel.date - prev_refuel.date
+        total_liters = prev_refuel.rest_liters + prev_refuel.liters - cur_refuel.rest_liters
+        total_km = float(cur_refuel.odo - prev_refuel.odo)
+
+        cur_time = prev_refuel.date
+
+        while 1:
+
+            year, month = cur_time.year, cur_time.month
+            next_month = month + 1
+            if next_month == 13:
+                next_month = 1
+                next_year = year+1
+            else:
+                next_year = year
+
+            next_month_start = datetime.combine(date(next_year,next_month,1),time(0,0,0))
+
+            if next_month_start < cur_refuel.date:
+                months[(year,month)].liters += timedelta_fraction(next_month_start-cur_time,total_time) * total_liters
+                months[(year,month)].km += timedelta_fraction(next_month_start-cur_time,total_time) * total_km
+                cur_time = next_month_start
+            else:
+                months[(year,month)].liters += timedelta_fraction(cur_refuel.date-cur_time,total_time) * total_liters
+                months[(year,month)].km += timedelta_fraction(cur_refuel.date-cur_time,total_time) * total_km
+                break
+
+    for m in months.itervalues():
+        m.save()
+
+    print  >> out, "total km = %.2f" % sum(m.km for m in months.itervalues())
+    print  >> out,"total l = %.2f" % sum(m.liters for m in months.itervalues())   
 
 
 
